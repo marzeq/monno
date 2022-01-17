@@ -1,11 +1,11 @@
-import { CustomClient } from "./client"
-import discord, { GuildMember } from "discord.js"
+import { MonnoClient } from "./client"
+import discord from "discord.js"
 
-export class CommandManager {
-    public readonly commands: discord.Collection<string, Command> = new discord.Collection()
+export class MonnoCommandManager {
+    public readonly commands: discord.Collection<string, MonnoCommand> = new discord.Collection()
     private registered = false
 
-    public add(command: Command): CommandManager {
+    public add(command: MonnoCommand): MonnoCommandManager {
         if (this.registered)
             throw new Error("Cannot add commands after registering")
 
@@ -13,15 +13,22 @@ export class CommandManager {
         return this
     }
 
-    public get(name: string): Command | undefined {
+    public addMany(commands: MonnoCommand[]): MonnoCommandManager {
+        for (const command of commands)
+            this.add(command)
+
+        return this
+    }
+
+    public get(name: string): MonnoCommand | undefined {
         return this.commands.get(name)
     }
 
-    public getAll(): Command[] {
+    public getAll(): MonnoCommand[] {
         return Array.from(this.commands.values())
     }
 
-    public async register(client: CustomClient): Promise<CommandManager> {
+    public async register(client: MonnoClient): Promise<MonnoCommandManager> {
         if (this.registered)
             throw new Error("Cannot register commands twice")
 
@@ -30,11 +37,11 @@ export class CommandManager {
         client.on("interactionCreate", async interaction => {
             if (!interaction.isCommand()) return
             let name = interaction.commandName
-            if (client.env.ENV === "dev")
+            if (client.dev)
                 name = name.replace("dev_", "")
-            const command = client.commandManager.get(name)
+            const command = client.commands.get(name)
             if (command) {
-                if (command.requirePermissions && client.env.ENV !== "dev") {
+                if (command.requirePermissions && !client.dev) {
                     if (!interaction.inGuild())
                         return interaction.reply({
                             content: "This command can only be used in a server",
@@ -64,9 +71,9 @@ export class CommandManager {
         })
 
         client.on("ready", async () => {
-            if (client.env.ENV === "dev") {
-                const commandsToRegister = client.commandManager.getAll().map(c => convertCommandToDiscordCommand(c, "dev")),
-                    guild = client.guilds.cache.get(client.config.devGuildData.id)
+            if (client.dev) {
+                const commandsToRegister = client.commands.getAll().map(c => convertCommandToDiscordCommand(c, "dev")),
+                    guild = client.guilds.cache.get(client.devGuildID)
 
                 if (!guild)
                     throw new Error("Could not find dev guild. Are you sure you have the GUILDS intent enabled?")
@@ -74,7 +81,7 @@ export class CommandManager {
                 const fullPermissions: discord.GuildApplicationCommandPermissionData[] = Array.from(await guild.commands.set(commandsToRegister)).map(command => ({
                     id: command[1].id,
                     permissions: [{
-                        id: client.config.ownerId,
+                        id: client.ownerID,
                         type: "USER",
                         permission: true
                     }]
@@ -82,7 +89,7 @@ export class CommandManager {
 
                 await guild.commands.permissions.set({ fullPermissions })
             } else {
-                const commandsToRegister = client.commandManager.getAll().map(c => convertCommandToDiscordCommand(c, "prod")),
+                const commandsToRegister = client.commands.getAll().map(c => convertCommandToDiscordCommand(c, "prod")),
                     clientApplication = client.application
 
                 if (!clientApplication)
@@ -98,7 +105,7 @@ export class CommandManager {
     }
 }
 
-const convertCommandToDiscordCommand = (command: Command, env: "dev" | "prod"): discord.ChatInputApplicationCommandData => ({
+const convertCommandToDiscordCommand = (command: MonnoCommand, env: "dev" | "prod"): discord.ChatInputApplicationCommandData => ({
     name: (env === "dev" ? "dev_" : "") + command.name,
     description: command.description,
     options: command.options ?? [],
@@ -106,32 +113,13 @@ const convertCommandToDiscordCommand = (command: Command, env: "dev" | "prod"): 
 })
 
 
-interface Command {
-    /**
-     * The name of the command.
-     */
+export interface MonnoCommand {
     name: string
-    /**
-     * The description of the command.
-     */
     description: string
-    /**
-     * The options of the command.
-     */
     options?: discord.ApplicationCommandOptionData[]
-    /**
-     * The permissions required to run the command.
-     * 
-     * Don't set if you want this command to be able to be run in DM's. Set to an empty array if you want this to be a guild only command but don't want to require any permissions.
-     */
     requirePermissions?: {
         type: "any" | "all",
         permissions: discord.PermissionResolvable[]
     }
-    /**
-     * The function to run when the command is called.
-     * 
-     * Can be either async or sync.
-     */
     run(interaction: discord.CommandInteraction): void | Promise<void>
 }

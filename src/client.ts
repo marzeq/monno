@@ -1,26 +1,30 @@
 import discord from "discord.js"
-import { CustomConfig } from "./config"
-import { CommandManager } from "./commands"
+import { MonnoCommandManager } from "./commands"
+import { MonnoExtension, MonnoExtensionManager } from "./extensions"
 
-export class CustomClient extends discord.Client {
-    public commandManager: CommandManager
-    public env: CustomEnv
-    public config: CustomConfig
+export class MonnoClient extends discord.Client {
+    public commands: MonnoCommandManager
+    public extensions: MonnoExtensionManager
+    public ownerID: string
+    public devGuildID: string
+    public dev: boolean
 
-    constructor(options: CustomClientOptions) {
+    constructor(options: MonnoClientOptions) {
         super(options)
-        this.config = options.config
-        this.env = options.env
-        this.commandManager = new CommandManager()
+        this.ownerID = options.ownerID
+        this.devGuildID = options.devGuildID
+        this.dev = options.dev
+        this.commands = new MonnoCommandManager()
+        this.extensions = new MonnoExtensionManager(this)
     }
 }
 
-type CustomClientOptions = discord.ClientOptions & {
-    env: CustomEnv
-    config: CustomConfig
-}
-
-export interface CustomEnv {
-    DISCORD_TOKEN: string
-    ENV: "dev" | "prod"
+export type MonnoClientOptions = discord.ClientOptions & {
+    token: string
+    dev: boolean
+    ownerID: string
+    devGuildID: string
+    extensions?: MonnoExtension[]
+    onStartup: (client: MonnoClient) => Promise<void> | void
+    afterLogin?: (client: MonnoClient) => Promise<void> | void
 }

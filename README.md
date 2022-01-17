@@ -1,9 +1,41 @@
-# This repository is a template for all of my Discord bots.
+# Monno, a simple to use discord.js bot framework
 
-You can use it in your project, as long as you publish it under the [license](./LICENSE) terms.
+## Install Monno
 
-The repo contains standard files like a [.gitignore](./.gitignore), [package.json](./package.json) etc.
+`npm install monno`
+`yarn add monno`
 
-Try to not touch any files in the [src/](./src) directory except [config.ts](./src/config.ts), [registerExtensions.ts](./src/registerExtensions.ts) and any files in [extensions/](./src/extensions) unless you know exactly what you're doing.
+## Features
 
-The concept of extensions is explained in the [extensions README.md file](./src/extensions/README.md).
+-   Easy to use command framework
+-   Revolutionary concept of extensions that allow you to split your bot into multiple parts or to use easily register third party extensions
+-   No fuffing around with boring internals, just jump right in and start coding!
+
+## Example index.js file
+
+(TypeScript)
+
+```ts
+import monno from "monno"
+
+monno({
+    ownerID: "12345678901234567",
+    testGuildID: "12345678901234567",
+    dev: true,
+    token: "👀",
+    extensions: [
+        {
+            name: "helloWorld",
+            commands: [
+                {
+                    name: "helloWorld",
+                    description: "Say hello to the world",
+                    async run(interaction) {
+                        interaction.reply("Hello world!")
+                    },
+                },
+            ],
+        },
+    ],
+})
+```
