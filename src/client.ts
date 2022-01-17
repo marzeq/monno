@@ -1,8 +1,8 @@
-import discord from "discord.js"
+import { BitFieldResolvable, Client, ClientOptions, IntentsString } from "discord.js"
 import { MonnoCommandManager } from "./commands"
 import { MonnoExtension, MonnoExtensionManager } from "./extensions"
 
-export class MonnoClient extends discord.Client {
+export class MonnoClient extends Client {
     public commands: MonnoCommandManager
     public extensions: MonnoExtensionManager
     public ownerID: string
@@ -19,12 +19,13 @@ export class MonnoClient extends discord.Client {
     }
 }
 
-export type MonnoClientOptions = discord.ClientOptions & {
+export type MonnoClientOptions = ClientOptions & {
     token: string
     dev: boolean
     ownerID: string
     devGuildID: string
     extensions?: MonnoExtension[]
-    onStartup: (client: MonnoClient) => Promise<void> | void
+    intents?: BitFieldResolvable<IntentsString, number>
+    onStartup?: (client: MonnoClient) => Promise<void> | void
     afterLogin?: (client: MonnoClient) => Promise<void> | void
 }

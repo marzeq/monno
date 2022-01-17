@@ -1,8 +1,16 @@
 import { MonnoClient } from "./client"
-import discord from "discord.js"
+import {
+    Collection,
+    Permissions,
+    GuildApplicationCommandPermissionData,
+    ApplicationCommandOptionData,
+    ChatInputApplicationCommandData,
+    PermissionResolvable,
+    CommandInteraction
+} from "discord.js"
 
 export class MonnoCommandManager {
-    public readonly commands: discord.Collection<string, MonnoCommand> = new discord.Collection()
+    public readonly commands: Collection<string, MonnoCommand> = new Collection()
     private registered = false
 
     public add(command: MonnoCommand): MonnoCommandManager {
@@ -50,7 +58,7 @@ export class MonnoCommandManager {
 
                     let permissions = interaction.member.permissions
                     if (typeof permissions === "string")
-                        permissions = new discord.Permissions(BigInt(permissions))
+                        permissions = new Permissions(BigInt(permissions))
 
                     if (
                         command.requirePermissions.type === "all" && !permissions.has(command.requirePermissions.permissions) ||
@@ -78,7 +86,7 @@ export class MonnoCommandManager {
                 if (!guild)
                     throw new Error("Could not find dev guild. Are you sure you have the GUILDS intent enabled?")
 
-                const fullPermissions: discord.GuildApplicationCommandPermissionData[] = Array.from(await guild.commands.set(commandsToRegister)).map(command => ({
+                const fullPermissions: GuildApplicationCommandPermissionData[] = Array.from(await guild.commands.set(commandsToRegister)).map(command => ({
                     id: command[1].id,
                     permissions: [{
                         id: client.ownerID,
@@ -105,7 +113,7 @@ export class MonnoCommandManager {
     }
 }
 
-const convertCommandToDiscordCommand = (command: MonnoCommand, env: "dev" | "prod"): discord.ChatInputApplicationCommandData => ({
+const convertCommandToDiscordCommand = (command: MonnoCommand, env: "dev" | "prod"): ChatInputApplicationCommandData => ({
     name: (env === "dev" ? "dev_" : "") + command.name,
     description: command.description,
     options: command.options ?? [],
@@ -116,10 +124,10 @@ const convertCommandToDiscordCommand = (command: MonnoCommand, env: "dev" | "pro
 export interface MonnoCommand {
     name: string
     description: string
-    options?: discord.ApplicationCommandOptionData[]
+    options?: ApplicationCommandOptionData[]
     requirePermissions?: {
         type: "any" | "all",
-        permissions: discord.PermissionResolvable[]
+        permissions: PermissionResolvable[]
     }
-    run(interaction: discord.CommandInteraction): void | Promise<void>
+    run(interaction: CommandInteraction): void | Promise<void>
 }

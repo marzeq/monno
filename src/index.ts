@@ -9,7 +9,7 @@ export const startMonno = async (options: MonnoClientOptions) => {
 
     client.extensions.addMany(options.extensions ?? [])
 
-    await options.onStartup(client)
+    await options.onStartup?.(client)
 
     await client.extensions.register(client)
     await client.login(options.token)

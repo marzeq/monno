@@ -1,10 +1,10 @@
 import { MonnoClient } from "./client"
-import discord from "discord.js"
+import { Collection } from "discord.js"
 import { MonnoCommand } from "./commands"
 
 export class MonnoExtensionManager {
-    public readonly extensions: discord.Collection<string, MonnoExtension> = new discord.Collection()
-    private readonly extensionData: discord.Collection<string, unknown> = new discord.Collection()
+    public readonly extensions: Collection<string, MonnoExtension> = new Collection()
+    private readonly extensionData: Collection<string, unknown> = new Collection()
     private client: MonnoClient
     private registered = false
 
