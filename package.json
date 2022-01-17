@@ -1,7 +1,7 @@
 {
 	"name": "monno",
 	"description": "A simple to use discord.js bot framework",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"author": "marzeq",
 	"license": "GPL-3.0-or-later",
 	"repository": "https://github.com/marzeq/monno",

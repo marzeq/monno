@@ -52,7 +52,7 @@ export class MonnoExtensionManager {
         this.registered = true
 
         for (const extension of this.getAll())
-            await extension.runner(client)
+            await extension.runner?.(client)
 
         await client.commands.register(client)
 
@@ -64,5 +64,5 @@ export interface MonnoExtension {
     name: string
     data?: unknown
     commands?: MonnoCommand[]
-    runner: (client: MonnoClient) => Promise<void> | void
+    runner?: (client: MonnoClient) => Promise<void> | void
 }
