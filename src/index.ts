@@ -1,10 +1,10 @@
-import discord from "discord.js"
+import { Intents } from "discord.js"
 import { MonnoClient, MonnoClientOptions } from "./client"
 
 export const startMonno = async (options: MonnoClientOptions) => {
     const client = new MonnoClient({
         ...options,
-        intents: new discord.Intents(options.intents).add("GUILDS")
+        intents: new Intents(options.intents).add("GUILDS")
     })
 
     client.extensions.addMany(options.extensions ?? [])
