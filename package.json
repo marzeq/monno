@@ -1,7 +1,7 @@
 {
 	"name": "monno",
 	"description": "A simple to use discord.js bot framework",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"author": "marzeq",
 	"license": "GPL-3.0-or-later",
 	"repository": "https://github.com/marzeq/monno",
@@ -18,6 +18,6 @@
 		"typescript": "^4.5.4"
 	},
 	"scripts": {
-		"build": "tsc"
+		"pub": "tsc && npm publish"
 	}
 }
