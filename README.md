@@ -3,17 +3,16 @@
 ## Install Monno
 
 `npm install monno`
+
 `yarn add monno`
 
-## Features
+## Features and pros of Monno
 
 -   Easy to use command framework
--   Revolutionary concept of extensions that allow you to split your bot into multiple parts or to use easily register third party extensions
--   No fuffing around with boring internals, just jump right in and start coding!
+-   Revolutionary concept of extensions that allow you to split your bot into multiple parts or to easily register third party extensions
+-   No faffing around with boring internals, just jump right in and start coding!
 
-## Example index.js file
-
-(TypeScript)
+## Example index file
 
 ```ts
 import monno from "monno"
