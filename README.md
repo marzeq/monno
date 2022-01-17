@@ -10,6 +10,7 @@
 
 -   Easy to use command framework
 -   Revolutionary concept of extensions that allow you to split your bot into multiple parts or to easily register third party extensions
+-   Development mode where the commands are only accessible to the bot owner
 -   No faffing around with boring internals, just jump right in and start coding!
 
 ## Example index file

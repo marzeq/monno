@@ -105,8 +105,6 @@ export class MonnoCommandManager {
 
                 await clientApplication.commands.set(commandsToRegister)
             }
-
-            console.log("Registered commands")
         })
 
         return this
