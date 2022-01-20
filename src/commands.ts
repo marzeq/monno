@@ -1,4 +1,4 @@
-import { MonnoClient } from "./client"
+import { Monno } from "./client"
 import {
     Collection,
     Permissions,
@@ -36,7 +36,7 @@ export class MonnoCommandManager {
         return Array.from(this.commands.values())
     }
 
-    public async register(client: MonnoClient): Promise<MonnoCommandManager> {
+    public async register(client: Monno): Promise<MonnoCommandManager> {
         if (this.registered)
             throw new Error("Cannot register commands twice")
 

@@ -1,14 +1,14 @@
-import { MonnoClient } from "./client"
+import { Monno } from "./client"
 import { Collection } from "discord.js"
 import { MonnoCommand } from "./commands"
 
 export class MonnoExtensionManager {
     public readonly extensions: Collection<string, MonnoExtension> = new Collection()
     private readonly extensionData: Collection<string, unknown> = new Collection()
-    private client: MonnoClient
+    private client: Monno
     private registered = false
 
-    constructor(client: MonnoClient) {
+    constructor(client: Monno) {
         this.client = client
     }
 
@@ -45,16 +45,16 @@ export class MonnoExtensionManager {
         return this.extensionData.get(name) as T
     }
 
-    public async register(client: MonnoClient): Promise<MonnoExtensionManager> {
+    public async register(): Promise<MonnoExtensionManager> {
         if (this.registered)
             throw new Error("Cannot register extensions twice")
 
         this.registered = true
 
         for (const extension of this.getAll())
-            await extension.runner?.(client)
+            await extension.onRegister?.(this.client)
 
-        await client.commands.register(client)
+        await this.client.commands.register(this.client)
 
         return this
     }
@@ -64,5 +64,5 @@ export interface MonnoExtension {
     name: string
     data?: unknown
     commands?: MonnoCommand[]
-    runner?: (client: MonnoClient) => Promise<void> | void
+    onRegister?: (client: Monno) => Promise<void> | void
 }
