@@ -18,7 +18,6 @@
 		"typescript": "^4.5.4"
 	},
 	"scripts": {
-		"pub": "tsc && npm publish",
-		"postinstall": "./node_modules/typescript/bin/tsc"
+		"pub": "tsc && npm publish"
 	}
 }
