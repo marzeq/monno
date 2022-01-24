@@ -41,7 +41,7 @@ export class Monno extends Client {
         this.extensions = new MonnoExtensionManager(this)
     }
 
-    public async login(token: string): Promise<string> {
+    public async start(token: string): Promise<string> {
         this.emit("startup", this)
 
         await this.extensions.register()
