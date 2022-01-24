@@ -57,7 +57,7 @@ const client = new Monno({
     // but this fine for the tutorial
 })
 
-client.login("<your bot token>")
+client.start("<your bot token>")
 ```
 
 -   Compile the code with `tsc`
