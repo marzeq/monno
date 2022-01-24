@@ -2,7 +2,11 @@
 
 ## Install Monno
 
+With npm:
+
 `npm install monno`
+
+Or with yarn:
 
 `yarn add monno`
 
@@ -10,33 +14,26 @@
 
 -   Easy to use command framework
 -   Revolutionary concept of extensions that allow you to split your bot into multiple parts or to easily register third party extensions
--   Development mode where the commands are only accessible to the bot owner
--   No faffing around with boring internals, just jump right in and start coding!
+-   Maintains the true spirit of discord.js while allowing you to easily add features without having to work on boring internals
 
-## Example index file
+## Simple hello world project
 
 ```ts
-import monno from "monno"
+import { Monno } from "monno"
 
-monno({
+const client = new Monno({
     ownerID: "12345678901234567",
     testGuildID: "12345678901234567",
     dev: true,
-    token: "👀",
-    extensions: [
-        {
-            name: "helloWorld",
-            commands: [
-                {
-                    name: "helloWorld",
-                    description: "Say hello to the world",
-                    async run(interaction) {
-                        interaction.reply("Hello world!")
-                    },
-                },
-            ],
-        },
-    ],
-    intents: [],
 })
+
+client.commands.add({
+    name: "helloworld",
+    description: "Says hello to the world",
+    async run(interaction) {
+        interaction.reply("Hello, World!")
+    },
+})
+
+client.login("<TOKEN>")
 ```
