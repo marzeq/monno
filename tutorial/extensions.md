@@ -151,4 +151,4 @@ From now, you can replicate the steps above to add more extensions.
 
 ### What to do next?
 
--   Check out the [03. Third party extensions](./third_party.md) section to learn more about how to create and use third-party extensions.
+-   Check out the [03. Extension data](./extension_data.md) section to learn more about how to create extensions that utilise the data property.
