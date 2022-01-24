@@ -1,5 +1,5 @@
 import { Monno } from "./client"
-import { Collection } from "discord.js"
+import { Awaitable, ClientEvents, Collection } from "discord.js"
 import { MonnoCommand } from "./commands"
 
 export class MonnoExtensionManager {
@@ -51,8 +51,10 @@ export class MonnoExtensionManager {
 
         this.registered = true
 
-        for (const extension of this.getAll())
+        for (const extension of this.getAll()) {
             await extension.onRegister?.(this.client)
+            if (extension.listeners) for (const listner of extension.listeners) this.client.on(listner[0], listner[1])
+        }
 
         await this.client.commands.register(this.client)
 
@@ -64,5 +66,6 @@ export interface MonnoExtension {
     name: string
     data?: unknown
     commands?: MonnoCommand[]
+    listeners?: [event: string, listener: (...args: any[]) => Awaitable<void>][]
     onRegister?: (client: Monno) => Promise<void> | void
 }

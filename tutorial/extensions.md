@@ -42,17 +42,9 @@ Change the code to add the following code:
 ```ts
 client.extensions.add({
     name: "example",
-    onRegister: async (client) => {
-        client.on("ready", () => {
-            console.log("Ready!")
-        })
-    },
+    listeners: [["ready", () => console.log("ready!")]],
 })
 ```
-
-This trick allows us to add listeners in the same file as the commands.
-
-##### (Although I should probably also add a listeners field to the extension object. This is sort of hacky and the `onRegister` method is meant more for third-party extensions.)
 
 ## 02.4. Moving the extensions to separate files
 
