@@ -19,6 +19,8 @@
 	},
 	"scripts": {
 		"pub": "tsc && npm publish",
-		"postinstall": "tsc"
+		"tsc": "./node_modules/typescript/bin/tsc",
+		"compile": "tsc",
+		"postinstall": "npm run compile"
 	}
 }
