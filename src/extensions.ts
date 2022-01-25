@@ -1,5 +1,5 @@
 import { Monno } from "./client"
-import { Awaitable, ClientEvents, Collection } from "discord.js"
+import { Awaitable, Collection } from "discord.js"
 import { MonnoCommand } from "./commands"
 
 export class MonnoExtensionManager {
