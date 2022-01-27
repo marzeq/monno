@@ -28,3 +28,12 @@ client.extensions.data("my-extension").myData // "my-data"
 ## 03.03. Example extension that uses extension data: mongodb extension
 
 Check out [this file](./mongodb_ext.ts) to see how extension data is used in an example mongodb extension.
+
+## 03.04. Publishing your extension to npm
+
+We reccomend to read these articles to learn how to publish your extension to npm:
+
+-   [Creating a package.json file](https://docs.npmjs.com/creating-a-package-json-file)
+-   [Creating Node.js modules](https://docs.npmjs.com/creating-node-js-modules)
+-   [Creating and publishing unscoped public packages](https://docs.npmjs.com/creating-and-publishing-unscoped-public-packages)
+-   **For TypeScript** after you've read the rest of the articles: [TypeScript - Publishing](https://www.typescriptlang.org/docs/handbook/declaration-files/publishing.html)

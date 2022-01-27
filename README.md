@@ -22,8 +22,8 @@ Or with yarn:
 import { Monno } from "monno"
 
 const client = new Monno({
-    ownerID: "12345678901234567",
-    testGuildID: "12345678901234567",
+    ownerIDs: ["12345678901234567"],
+    devGuildID: "12345678901234567",
     dev: true,
 })
 

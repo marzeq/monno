@@ -28,15 +28,19 @@ export declare interface Monno extends Client {
 export class Monno extends Client {
     public commands: MonnoCommandManager
     public extensions: MonnoExtensionManager
-    public ownerID: string
-    public devGuildID: string
+    public developerIDs?: string[]
+    public devGuildID?: string
     public dev: boolean
 
     constructor(options: MonnoClientOptions) {
         super(options)
-        this.ownerID = options.ownerID
-        this.devGuildID = options.devGuildID
         this.dev = options.dev
+
+        if (options.dev) {
+            this.developerIDs = options.developerIDs
+            this.devGuildID = options.devGuildID
+        }
+
         this.commands = new MonnoCommandManager()
         this.extensions = new MonnoExtensionManager(this)
     }
@@ -51,13 +55,16 @@ export class Monno extends Client {
     }
 }
 
-export type MonnoClientOptions = ClientOptions & {
+export type MonnoClientOptions = ClientOptions & ({
     /** This is used to determine wheter the commands should be registered in a (hopefully) private dev server. */
-    dev: boolean
-    /** This is used to allow only the bot owner to run the dev commands. */
-    ownerID: string
+    dev: true
+    /** This is used to allow only the bot developers to run the dev commands. */
+    developerIDs: string[]
     /** This will be used to determine which guild the dev commands should be registered in. */
     devGuildID: string
     /** This is used to determine which intents the bot should have. Keep in mind the bot automatically puts the GUILDS intent in */
     intents?: BitFieldResolvable<IntentsString, number>
-}
+} | {
+    dev: false
+    intents?: BitFieldResolvable<IntentsString, number>
+})

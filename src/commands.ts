@@ -45,35 +45,37 @@ export class MonnoCommandManager {
         client.on("interactionCreate", async interaction => {
             if (!interaction.isCommand()) return
             let name = interaction.commandName
-            if (client.dev)
-                name = name.replace("dev_", "")
+            if (client.dev && name.startsWith("dev_")) name = name.replace("dev_", "")
+            else if (!client.dev && name.startsWith("dev_")) return
             const command = client.commands.get(name)
             if (command) {
                 if (command.requirePermissions && !client.dev) {
-                    if (!interaction.inGuild())
+                    if (!interaction.inGuild() && !command.allowDM)
                         return interaction.reply({
                             content: "This command can only be used in a server",
                             ephemeral: true
                         })
 
-                    let permissions = interaction.member.permissions
-                    if (typeof permissions === "string")
-                        permissions = new Permissions(BigInt(permissions))
+                    if (interaction.inGuild()) {
+                        let permissions = interaction.member.permissions
+                        if (typeof permissions === "string")
+                            permissions = new Permissions(BigInt(permissions))
 
-                    if (
-                        command.requirePermissions.type === "all" && !permissions.has(command.requirePermissions.permissions) ||
-                        command.requirePermissions.type === "any" && !permissions.any(command.requirePermissions.permissions)
-                    )
-                        return interaction.reply({
-                            content: "You do not have the required permissions to use this command",
-                            ephemeral: true
-                        })
+                        if (
+                            command.requirePermissions.type === "all" && !permissions.has(command.requirePermissions.permissions) ||
+                            command.requirePermissions.type === "any" && !permissions.any(command.requirePermissions.permissions)
+                        )
+                            return interaction.reply({
+                                content: "You lack the required permission(s) to use this command!",
+                                ephemeral: true
+                            })
+                    }
 
                 }
                 await command.run(interaction)
             } else
                 interaction.reply({
-                    content: "Command not found. This is probably a bug, please report it to the developers",
+                    content: "Command not found.",
                     ephemeral: true
                 })
         })
@@ -81,18 +83,18 @@ export class MonnoCommandManager {
         client.on("ready", async () => {
             if (client.dev) {
                 const commandsToRegister = client.commands.getAll().map(c => convertCommandToDiscordCommand(c, "dev")),
-                    guild = client.guilds.cache.get(client.devGuildID)
+                    guild = client.guilds.cache.get(client.devGuildID!)
 
                 if (!guild)
                     throw new Error("Could not find dev guild. Are you sure you have the GUILDS intent enabled?")
 
                 const fullPermissions: GuildApplicationCommandPermissionData[] = Array.from(await guild.commands.set(commandsToRegister)).map(command => ({
                     id: command[1].id,
-                    permissions: [{
-                        id: client.ownerID,
+                    permissions: client.developerIDs!.map(id => ({
+                        id: id,
                         type: "USER",
                         permission: true
-                    }]
+                    }))
                 }))
 
                 await guild.commands.permissions.set({ fullPermissions })
@@ -123,6 +125,7 @@ export interface MonnoCommand {
     name: string
     description: string
     options?: ApplicationCommandOptionData[]
+    allowDM?: boolean
     requirePermissions?: {
         type: "any" | "all",
         permissions: PermissionResolvable[]
