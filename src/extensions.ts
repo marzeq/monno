@@ -1,6 +1,6 @@
 import { Monno } from "./client"
-import { Awaitable, Collection } from "discord.js"
-import { MonnoCommand } from "./slashCommands"
+import { ApplicationCommandDataResolvable, Awaitable, Collection, GuildApplicationCommandPermissionData, Interaction } from "discord.js"
+import { MonnoSlashCommand } from "./slashCommands"
 import { MonnoContextMenu } from "./contextMenus"
 
 export class MonnoExtensionManager {
@@ -21,8 +21,8 @@ export class MonnoExtensionManager {
 
         if (extension.data)
             this.extensionData.set(extension.name, extension.data)
-        if (extension.commands)
-            this.client.slashCommands.addMany(extension.commands)
+        if (extension.slashCommands)
+            this.client.slashCommands.addMany(extension.slashCommands)
         if (extension.contextMenus)
             this.client.contextMenus.addMany(extension.contextMenus)
         if (extension.listeners) for (const listner of extension.listeners) this.client.on(listner[0], listner[1])
@@ -57,8 +57,42 @@ export class MonnoExtensionManager {
 
         for (const extension of this.getAll()) await extension.onRegister?.(this.client)
 
-        await this.client.slashCommands.register(this.client)
-        await this.client.contextMenus.register(this.client)
+        const slashCommands = await this.client.slashCommands.build(this.client),
+            contextMenus = await this.client.contextMenus.build(this.client)
+
+        this.client.on("ready", async () => {
+            if (this.client.dev) {
+                const commandsToRegister = slashCommands.commandsToRegister.concat(contextMenus.commandsToRegister),
+                    guild = this.client.guilds.cache.get(this.client.devGuildID!)
+
+                if (!guild)
+                    throw new Error("Could not find dev guild. Are you sure you have the GUILDS intent enabled?")
+
+                const fullPermissions: GuildApplicationCommandPermissionData[] = Array.from(await guild.commands.set(commandsToRegister)).map(command => ({
+                    id: command[1].id,
+                    permissions: this.client.developerIDs!.map(id => ({
+                        id: id,
+                        type: "USER",
+                        permission: true
+                    }))
+                }))
+
+                await guild.commands.permissions.set({ fullPermissions })
+            } else {
+                const commandsToRegister = slashCommands.commandsToRegister.concat(contextMenus.commandsToRegister),
+                    clientApplication = this.client.application
+
+                if (!clientApplication)
+                    throw new Error("Could not find the client application.")
+
+                await clientApplication.commands.set(commandsToRegister)
+            }
+        })
+
+        this.client.on("interactionCreate", async interaction => {
+            await contextMenus.onInteraction(interaction)
+            await slashCommands.onInteraction(interaction)
+        })
 
         return this
     }
@@ -67,8 +101,13 @@ export class MonnoExtensionManager {
 export interface MonnoExtension {
     name: string
     data?: unknown
-    commands?: MonnoCommand[]
+    slashCommands?: MonnoSlashCommand[]
     contextMenus?: MonnoContextMenu[]
     listeners?: [event: string, listener: (...args: any[]) => Awaitable<void>][]
     onRegister?: (client: Monno) => Promise<void> | void
+}
+
+export interface MonnoClientCommandBuild {
+    onInteraction: (interaction: Interaction) => Promise<any> | any
+    commandsToRegister: ApplicationCommandDataResolvable[]
 }
