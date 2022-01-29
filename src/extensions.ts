@@ -13,7 +13,7 @@ export class MonnoExtensionManager {
         this.client = client
     }
 
-    public add(extension: MonnoExtension): MonnoExtensionManager {
+    public add(extension: MonnoExtension): this {
         if (this.registered)
             throw new Error("Cannot add extensions after registering")
 
@@ -30,7 +30,7 @@ export class MonnoExtensionManager {
         return this
     }
 
-    public addMany(extensions: MonnoExtension[]): MonnoExtensionManager {
+    public addMany(extensions: MonnoExtension[]): this {
         for (const extension of extensions)
             this.add(extension)
 
@@ -49,7 +49,7 @@ export class MonnoExtensionManager {
         return this.extensionData.get(name) as T
     }
 
-    public async register(): Promise<MonnoExtensionManager> {
+    public async register(): Promise<this> {
         if (this.registered)
             throw new Error("Cannot register extensions twice")
 
