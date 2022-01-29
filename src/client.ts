@@ -1,6 +1,7 @@
 import { Awaitable, BitFieldResolvable, Client, ClientEvents, ClientOptions, IntentsString, PermissionResolvable } from "discord.js"
-import { MonnoCommandManager } from "./commands"
+import { MonnoSlashCommandManager } from "./slashCommands"
 import { MonnoExtensionManager } from "./extensions"
+import { MonnoContextMenuManager } from "./contextMenus"
 
 export declare interface Monno extends Client {
     on<K extends keyof ClientEvents>(event: K, listener: (...args: ClientEvents[K]) => Awaitable<void>): this
@@ -26,7 +27,8 @@ export declare interface Monno extends Client {
 }
 
 export class Monno extends Client {
-    public commands: MonnoCommandManager
+    public slashCommands: MonnoSlashCommandManager
+    public contextMenus: MonnoContextMenuManager
     public extensions: MonnoExtensionManager
     public developerIDs?: string[]
     public devGuildID?: string
@@ -41,7 +43,8 @@ export class Monno extends Client {
             this.devGuildID = options.devGuildID
         }
 
-        this.commands = new MonnoCommandManager()
+        this.slashCommands = new MonnoSlashCommandManager()
+        this.contextMenus = new MonnoContextMenuManager()
         this.extensions = new MonnoExtensionManager(this)
     }
 

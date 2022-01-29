@@ -5,15 +5,14 @@ import {
     GuildApplicationCommandPermissionData,
     ApplicationCommandOptionData,
     ChatInputApplicationCommandData,
-    PermissionResolvable,
     CommandInteraction
 } from "discord.js"
 
-export class MonnoCommandManager {
+export class MonnoSlashCommandManager {
     public readonly commands: Collection<string, MonnoCommand> = new Collection()
     private registered = false
 
-    public add(command: MonnoCommand): MonnoCommandManager {
+    public add(command: MonnoCommand): MonnoSlashCommandManager {
         if (this.registered)
             throw new Error("Cannot add commands after registering")
 
@@ -21,7 +20,7 @@ export class MonnoCommandManager {
         return this
     }
 
-    public addMany(commands: MonnoCommand[]): MonnoCommandManager {
+    public addMany(commands: MonnoCommand[]): MonnoSlashCommandManager {
         for (const command of commands)
             this.add(command)
 
@@ -36,7 +35,7 @@ export class MonnoCommandManager {
         return Array.from(this.commands.values())
     }
 
-    public async register(client: Monno): Promise<MonnoCommandManager> {
+    public async register(client: Monno): Promise<MonnoSlashCommandManager> {
         if (this.registered)
             throw new Error("Cannot register commands twice")
 
@@ -50,7 +49,7 @@ export class MonnoCommandManager {
             if (client.dev && name.startsWith("dev_")) name = name.replace("dev_", "")
             else if (!client.dev && name.startsWith("dev_")) return
 
-            const command = client.commands.get(name)
+            const command = client.slashCommands.get(name)
 
             if (command) {
                 if (!interaction.inGuild() && !command.allowDM)
@@ -85,7 +84,7 @@ export class MonnoCommandManager {
 
         client.on("ready", async () => {
             if (client.dev) {
-                const commandsToRegister = client.commands.getAll().map(c => convertCommandToDiscordCommand(c, "dev")),
+                const commandsToRegister = client.slashCommands.getAll().map(c => convertCommandToDiscordCommand(c, "dev")),
                     guild = client.guilds.cache.get(client.devGuildID!)
 
                 if (!guild)
@@ -102,7 +101,7 @@ export class MonnoCommandManager {
 
                 await guild.commands.permissions.set({ fullPermissions })
             } else {
-                const commandsToRegister = client.commands.getAll().map(c => convertCommandToDiscordCommand(c, "prod")),
+                const commandsToRegister = client.slashCommands.getAll().map(c => convertCommandToDiscordCommand(c, "prod")),
                     clientApplication = client.application
 
                 if (!clientApplication)

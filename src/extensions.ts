@@ -1,6 +1,7 @@
 import { Monno } from "./client"
 import { Awaitable, Collection } from "discord.js"
-import { MonnoCommand } from "./commands"
+import { MonnoCommand } from "./slashCommands"
+import { MonnoContextMenu } from "./contextMenus"
 
 export class MonnoExtensionManager {
     public readonly extensions: Collection<string, MonnoExtension> = new Collection()
@@ -21,7 +22,10 @@ export class MonnoExtensionManager {
         if (extension.data)
             this.extensionData.set(extension.name, extension.data)
         if (extension.commands)
-            this.client.commands.addMany(extension.commands)
+            this.client.slashCommands.addMany(extension.commands)
+        if (extension.contextMenus)
+            this.client.contextMenus.addMany(extension.contextMenus)
+        if (extension.listeners) for (const listner of extension.listeners) this.client.on(listner[0], listner[1])
 
         return this
     }
@@ -51,12 +55,10 @@ export class MonnoExtensionManager {
 
         this.registered = true
 
-        for (const extension of this.getAll()) {
-            await extension.onRegister?.(this.client)
-            if (extension.listeners) for (const listner of extension.listeners) this.client.on(listner[0], listner[1])
-        }
+        for (const extension of this.getAll()) await extension.onRegister?.(this.client)
 
-        await this.client.commands.register(this.client)
+        await this.client.slashCommands.register(this.client)
+        await this.client.contextMenus.register(this.client)
 
         return this
     }
@@ -66,6 +68,7 @@ export interface MonnoExtension {
     name: string
     data?: unknown
     commands?: MonnoCommand[]
+    contextMenus?: MonnoContextMenu[]
     listeners?: [event: string, listener: (...args: any[]) => Awaitable<void>][]
     onRegister?: (client: Monno) => Promise<void> | void
 }
