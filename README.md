@@ -25,12 +25,13 @@ const client = new Monno({
     ownerIDs: ["12345678901234567"],
     devGuildID: "12345678901234567",
     dev: true,
+    intents: []
 })
 
-client.commands.add({
+client.slashCommands.add({
     name: "helloworld",
     description: "Says hello to the world",
-    async run(interaction) {
+    run: async interaction => {
         interaction.reply("Hello, World!")
     },
 })
