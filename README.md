@@ -36,5 +36,5 @@ client.slashCommands.add({
     },
 })
 
-client.login("<TOKEN>")
+client.start("<TOKEN>")
 ```
