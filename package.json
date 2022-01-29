@@ -18,6 +18,6 @@
 		"typescript": "^4.5.4"
 	},
 	"scripts": {
-		"pub": "tsc && npm publish"
+		"prepare": "tsc"
 	}
 }
