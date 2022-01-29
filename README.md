@@ -22,9 +22,9 @@ Or with yarn:
 import { Monno } from "monno"
 
 const client = new Monno({
-    ownerIDs: ["12345678901234567"],
-    devGuildID: "12345678901234567",
     dev: true,
+    developerIDs: ["12345678901234567"],
+    devGuildID: "12345678901234567",
     intents: []
 })
 
