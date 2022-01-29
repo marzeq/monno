@@ -1,4 +1,4 @@
-import { Awaitable, BitFieldResolvable, Client, ClientEvents, ClientOptions, IntentsString } from "discord.js"
+import { Awaitable, BitFieldResolvable, Client, ClientEvents, ClientOptions, IntentsString, PermissionResolvable } from "discord.js"
 import { MonnoCommandManager } from "./commands"
 import { MonnoExtensionManager } from "./extensions"
 
@@ -68,3 +68,8 @@ export type MonnoClientOptions = ClientOptions & ({
     dev: false
     intents?: BitFieldResolvable<IntentsString, number>
 })
+
+export type RequiredPermissionsType = {
+    type: "ALL" | "ANY"
+    permissions: PermissionResolvable[]
+}

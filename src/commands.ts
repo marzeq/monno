@@ -1,4 +1,4 @@
-import { Monno } from "./client"
+import { Monno, RequiredPermissionsType } from "./client"
 import {
     Collection,
     Permissions,
@@ -44,33 +44,36 @@ export class MonnoCommandManager {
 
         client.on("interactionCreate", async interaction => {
             if (!interaction.isCommand()) return
+
             let name = interaction.commandName
+
             if (client.dev && name.startsWith("dev_")) name = name.replace("dev_", "")
             else if (!client.dev && name.startsWith("dev_")) return
-            const command = client.commands.get(name)
-            if (command) {
-                if (command.requirePermissions && !client.dev) {
-                    if (!interaction.inGuild() && !command.allowDM)
-                        return interaction.reply({
-                            content: "This command can only be used in a server",
-                            ephemeral: true
-                        })
 
+            const command = client.commands.get(name)
+
+            if (command) {
+                if (!interaction.inGuild() && !command.allowDM)
+                    return interaction.reply({
+                        content: "This command can only be used in a server.",
+                        ephemeral: true
+                    })
+
+                if (command.requiredPermissions && !client.dev) {
                     if (interaction.inGuild()) {
                         let permissions = interaction.member.permissions
                         if (typeof permissions === "string")
                             permissions = new Permissions(BigInt(permissions))
 
                         if (
-                            command.requirePermissions.type === "all" && !permissions.has(command.requirePermissions.permissions) ||
-                            command.requirePermissions.type === "any" && !permissions.any(command.requirePermissions.permissions)
+                            command.requiredPermissions.type === "ALL" && !permissions.has(command.requiredPermissions.permissions) ||
+                            command.requiredPermissions.type === "ANY" && !permissions.any(command.requiredPermissions.permissions)
                         )
                             return interaction.reply({
                                 content: "You lack the required permission(s) to use this command!",
                                 ephemeral: true
                             })
                     }
-
                 }
                 await command.run(interaction)
             } else
@@ -103,7 +106,7 @@ export class MonnoCommandManager {
                     clientApplication = client.application
 
                 if (!clientApplication)
-                    throw new Error("Could not find client application.")
+                    throw new Error("Could not find the client application.")
 
                 await clientApplication.commands.set(commandsToRegister)
             }
@@ -126,9 +129,6 @@ export interface MonnoCommand {
     description: string
     options?: ApplicationCommandOptionData[]
     allowDM?: boolean
-    requirePermissions?: {
-        type: "any" | "all",
-        permissions: PermissionResolvable[]
-    }
+    requiredPermissions?: RequiredPermissionsType
     run(interaction: CommandInteraction): void | Promise<void>
 }
