@@ -1,4 +1,10 @@
-import { Awaitable, BitFieldResolvable, Client, ClientEvents, ClientOptions, IntentsString, PermissionResolvable } from "discord.js"
+import {
+    Awaitable,
+    Client,
+    ClientEvents,
+    ClientOptions,
+    PermissionResolvable
+} from "discord.js"
 import { MonnoSlashCommandManager } from "./slashCommands"
 import { MonnoExtensionManager } from "./extensions"
 import { MonnoContextMenuManager } from "./contextMenus"
@@ -65,11 +71,8 @@ export type MonnoClientOptions = ClientOptions & ({
     developerIDs: string[]
     /** This will be used to determine which guild the dev commands should be registered in. */
     devGuildID: string
-    /** This is used to determine which intents the bot should have. Keep in mind the bot automatically puts the GUILDS intent in */
-    intents?: BitFieldResolvable<IntentsString, number>
 } | {
     dev: false
-    intents?: BitFieldResolvable<IntentsString, number>
 })
 
 export type RequiredPermissionsType = {

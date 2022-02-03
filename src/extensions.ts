@@ -1,5 +1,11 @@
 import { Monno } from "./client"
-import { ApplicationCommandDataResolvable, Awaitable, Collection, GuildApplicationCommandPermissionData, Interaction } from "discord.js"
+import {
+    ApplicationCommandDataResolvable,
+    Awaitable,
+    Collection,
+    GuildApplicationCommandPermissionData,
+    Interaction
+} from "discord.js"
 import { MonnoSlashCommand } from "./slashCommands"
 import { MonnoContextMenu } from "./contextMenus"
 
@@ -66,7 +72,7 @@ export class MonnoExtensionManager {
                     guild = this.client.guilds.cache.get(this.client.devGuildID!)
 
                 if (!guild)
-                    throw new Error("Could not find dev guild. Are you sure you have the GUILDS intent enabled?")
+                    throw new Error("Could not find the dev guild. Are you sure you have the GUILDS intent enabled?")
 
                 const fullPermissions: GuildApplicationCommandPermissionData[] = Array.from(await guild.commands.set(commandsToRegister)).map(command => ({
                     id: command[1].id,

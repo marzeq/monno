@@ -2,9 +2,7 @@ import { Monno, RequiredPermissionsType } from "./client"
 import {
     Collection,
     Permissions,
-    GuildApplicationCommandPermissionData,
     ApplicationCommandOptionData,
-    ChatInputApplicationCommandData,
     CommandInteraction,
     ApplicationCommandDataResolvable
 } from "discord.js"
