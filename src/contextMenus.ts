@@ -4,7 +4,8 @@ import {
     Collection,
     MessageContextMenuInteraction,
     UserContextMenuInteraction,
-    Permissions
+    Permissions,
+    Awaitable
 } from "discord.js"
 import { MonnoClientCommandBuild } from "./extensions"
 
@@ -103,14 +104,20 @@ const convertMenuToDiscordMenu = (menu: MonnoContextMenu, dev: boolean): Applica
 
 
 export type MonnoContextMenu = {
+    /** The name of the context menu. */
     name: string
+    /** Whether the context menu should be available in direct messages. */
     allowDM?: boolean
+    /** The required permission(s) to use this context menu. */
     requiredPermissions?: RequiredPermissionsType
 } & ({
+    /** The type of the context menu. */
     type: "MESSAGE"
-    run: (interaction: MessageContextMenuInteraction) => Promise<any> | any
+    /** A function that is executed once someone clicks on the context menu. */
+    run: (interaction: MessageContextMenuInteraction) => Awaitable<any>
 } | {
-    name: string
+    /** The type of the context menu. */
     type: "USER"
-    run: (interaction: UserContextMenuInteraction) => Promise<any> | any
+    /** A function that is executed once someone clicks on the context menu. */
+    run: (interaction: UserContextMenuInteraction) => Awaitable<any> 
 })

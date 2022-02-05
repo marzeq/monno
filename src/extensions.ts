@@ -105,15 +105,21 @@ export class MonnoExtensionManager {
 }
 
 export interface MonnoExtension {
+    /** The name of the extension. */
     name: string
+    /** Data attached to the extension. */
     data?: unknown
+    /** Slash commands attached to the extension. */
     slashCommands?: MonnoSlashCommand[]
+    /** Context menus attached to the extension. */
     contextMenus?: MonnoContextMenu[]
-    listeners?: [event: string, listener: (...args: any[]) => Awaitable<void>][]
-    onRegister?: (client: Monno) => Promise<void> | void
+    /** Liseners attached to the extension. */
+    listeners?: [event: string, listener: (...args: any[]) => Awaitable<any>][]
+    /** A function that is ran when the extension is registered. */
+    onRegister?: (client: Monno) => Awaitable<any>
 }
 
 export interface MonnoClientCommandBuild {
-    onInteraction: (interaction: Interaction) => Promise<any> | any
+    onInteraction: (interaction: Interaction) => Awaitable<any>
     commandsToRegister: ApplicationCommandDataResolvable[]
 }

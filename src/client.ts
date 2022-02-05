@@ -72,10 +72,13 @@ export type MonnoClientOptions = ClientOptions & ({
     /** This will be used to determine which guild the dev commands should be registered in. */
     devGuildID: string
 } | {
+    /** This is used to determine wheter the commands should be registered in a (hopefully) private dev server. */
     dev: false
 })
 
 export type RequiredPermissionsType = {
+    /** Whether the user should match all or one of the permissions. */
     type: "ALL" | "ANY"
+    /** List of the permissions. */
     permissions: PermissionResolvable[]
 }

@@ -4,7 +4,8 @@ import {
     Permissions,
     ApplicationCommandOptionData,
     CommandInteraction,
-    ApplicationCommandDataResolvable
+    ApplicationCommandDataResolvable,
+    Awaitable
 } from "discord.js"
 import { MonnoClientCommandBuild } from "./extensions"
 
@@ -96,10 +97,16 @@ const convertCommandToDiscordCommand = (command: MonnoSlashCommand, dev: boolean
 
 
 export interface MonnoSlashCommand {
+    /** The name of the slash command. */
     name: string
+    /** The description of the slash command. */
     description: string
+    /** The options for the slash command. */
     options?: ApplicationCommandOptionData[]
+    /** Whether the slash command should be able to be run in direct messages. */
     allowDM?: boolean
+    /** The required permission(s) to use this slash command. */
     requiredPermissions?: RequiredPermissionsType
-    run(interaction: CommandInteraction): void | Promise<void>
+    /** A function that is executed once someone runs the slash command. */
+    run(interaction: CommandInteraction): Awaitable<any>
 }
