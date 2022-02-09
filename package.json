@@ -19,6 +19,7 @@
 		"typescript": "^4.5.4"
 	},
 	"scripts": {
-		"prepare": "rimraf dist/ && tsc"
+		"prepare": "rimraf dist/ && tsc",
+        "compile": "tsc"
 	}
 }
