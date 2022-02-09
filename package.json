@@ -1,7 +1,7 @@
 {
 	"name": "monno",
 	"description": "A simple to use discord.js bot framework",
-	"version": "1.2.1",
+	"version": "1.2.2",
 	"author": "marzeq",
 	"license": "GPL-3.0-or-later",
 	"repository": "https://github.com/marzeq/monno",
@@ -9,7 +9,17 @@
 	"typings": "dist/index.d.ts",
 	"keywords": [
 		"discord.js",
-		"bot"
+		"discord js",
+		"discordjs",
+		"bot",
+		"discord client",
+		"discord",
+		"commands",
+		"slash commands",
+		"discord slash",
+		"command handler",
+		"discord commands",
+		"discord handler"
 	],
 	"dependencies": {
 		"discord.js": "^13.3.1"
@@ -20,6 +30,6 @@
 	},
 	"scripts": {
 		"prepare": "rimraf dist/ && tsc",
-        "compile": "tsc"
+		"compile": "tsc"
 	}
 }
