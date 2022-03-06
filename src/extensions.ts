@@ -1,142 +1,111 @@
-/* 
-Copyright © 2022 marzeq
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
 import { Monno } from "./client"
-import {
-    ApplicationCommandDataResolvable,
-    Awaitable,
-    Collection,
-    GuildApplicationCommandPermissionData,
-    Interaction
-} from "discord.js"
+import { ApplicationCommandDataResolvable, Awaitable, Collection, GuildApplicationCommandPermissionData, Interaction } from "discord.js"
 import { MonnoSlashCommand } from "./slashCommands"
 import { MonnoContextMenu } from "./contextMenus"
 
 export class MonnoExtensionManager {
-    public readonly extensions: Collection<string, MonnoExtension> = new Collection()
-    private readonly extensionData: Collection<string, unknown> = new Collection()
-    private client: Monno
-    private registered = false
+	public readonly extensions: Collection<string, MonnoExtension> = new Collection()
+	private readonly extensionData: Collection<string, unknown> = new Collection()
+	private client: Monno
+	private registered = false
 
-    constructor(client: Monno) {
-        this.client = client
-    }
+	constructor(client: Monno) {
+		this.client = client
+	}
 
-    public add(extension: MonnoExtension): this {
-        if (this.registered)
-            throw new Error("Cannot add extensions after registering")
+	public add(extension: MonnoExtension): this {
+		if (this.registered) throw new Error("Cannot add extensions after registering")
 
-        this.extensions.set(extension.name, extension)
+		this.extensions.set(extension.name, extension)
 
-        if (extension.data)
-            this.extensionData.set(extension.name, extension.data)
-        if (extension.slashCommands)
-            this.client.slashCommands.addMany(extension.slashCommands)
-        if (extension.contextMenus)
-            this.client.contextMenus.addMany(extension.contextMenus)
-        if (extension.listeners) for (const listner of extension.listeners) this.client.on(listner[0], listner[1])
+		if (extension.data) this.extensionData.set(extension.name, extension.data)
+		if (extension.slashCommands) this.client.slashCommands.addMany(...extension.slashCommands)
+		if (extension.contextMenus) this.client.contextMenus.addMany(...extension.contextMenus)
+		if (extension.listeners) for (const listner of extension.listeners) this.client.on(listner[0], listner[1])
 
-        return this
-    }
+		return this
+	}
 
-    public addMany(extensions: MonnoExtension[]): this {
-        for (const extension of extensions)
-            this.add(extension)
+	public addMany(...extensions: MonnoExtension[]): this {
+		for (const extension of extensions) this.add(extension)
 
-        return this
-    }
+		return this
+	}
 
-    public get(name: string): MonnoExtension | undefined {
-        return this.extensions.get(name)
-    }
+	public get(name: string): MonnoExtension | undefined {
+		return this.extensions.get(name)
+	}
 
-    public getAll(): MonnoExtension[] {
-        return Array.from(this.extensions.values())
-    }
+	public getAll(): MonnoExtension[] {
+		return Array.from(this.extensions.values())
+	}
 
-    public data<T>(name: string): T {
-        return this.extensionData.get(name) as T
-    }
+	public data<T>(name: string): T {
+		return this.extensionData.get(name) as T
+	}
 
-    public async register(): Promise<this> {
-        if (this.registered)
-            throw new Error("Cannot register extensions twice")
+	public async register(): Promise<this> {
+		if (this.registered) throw new Error("Cannot register extensions twice")
 
-        this.registered = true
+		this.registered = true
 
-        for (const extension of this.getAll()) await extension.onRegister?.(this.client)
+		for (const extension of this.getAll()) await extension.onRegister?.(this.client)
 
-        const slashCommands = await this.client.slashCommands.build(this.client),
-            contextMenus = await this.client.contextMenus.build(this.client)
+		const slashCommands = await this.client.slashCommands.build(this.client),
+			contextMenus = await this.client.contextMenus.build(this.client)
 
-        this.client.on("ready", async () => {
-            if (this.client.dev) {
-                const commandsToRegister = slashCommands.commandsToRegister.concat(contextMenus.commandsToRegister),
-                    guild = this.client.guilds.cache.get(this.client.devGuildID!)
+		this.client.on("ready", async () => {
+			if (this.client.dev) {
+				const commandsToRegister = slashCommands.commandsToRegister.concat(contextMenus.commandsToRegister),
+					guild = this.client.guilds.cache.get(this.client.devGuildID!)
 
-                if (!guild)
-                    throw new Error("Could not find the dev guild. Are you sure you have the GUILDS intent enabled?")
+				if (!guild) throw new Error("Could not find the dev guild. Are you sure you have the GUILDS intent enabled?")
 
-                const fullPermissions: GuildApplicationCommandPermissionData[] = Array.from(await guild.commands.set(commandsToRegister)).map(command => ({
-                    id: command[1].id,
-                    permissions: this.client.developerIDs!.map(id => ({
-                        id: id,
-                        type: "USER",
-                        permission: true
-                    }))
-                }))
+				const fullPermissions: GuildApplicationCommandPermissionData[] = Array.from(await guild.commands.set(commandsToRegister)).map(command => ({
+					id: command[1].id,
+					permissions: this.client.developerIDs!.map(id => ({
+						id: id,
+						type: "USER",
+						permission: true
+					}))
+				}))
 
-                await guild.commands.permissions.set({ fullPermissions })
-            } else {
-                const commandsToRegister = slashCommands.commandsToRegister.concat(contextMenus.commandsToRegister),
-                    clientApplication = this.client.application
+				await guild.commands.permissions.set({ fullPermissions })
+			} else {
+				const commandsToRegister = slashCommands.commandsToRegister.concat(contextMenus.commandsToRegister),
+					clientApplication = this.client.application
 
-                if (!clientApplication)
-                    throw new Error("Could not find the client application.")
+				if (!clientApplication) throw new Error("Could not find the client application.")
 
-                await clientApplication.commands.set(commandsToRegister)
-            }
-        })
+				await clientApplication.commands.set(commandsToRegister)
+			}
+		})
 
-        this.client.on("interactionCreate", async interaction => {
-            await contextMenus.onInteraction(interaction)
-            await slashCommands.onInteraction(interaction)
-        })
+		this.client.on("interactionCreate", async interaction => {
+			await contextMenus.onInteraction(interaction)
+			await slashCommands.onInteraction(interaction)
+		})
 
-        return this
-    }
+		return this
+	}
 }
 
 export interface MonnoExtension {
-    /** The name of the extension. */
-    name: string
-    /** Data attached to the extension. */
-    data?: unknown
-    /** Slash commands attached to the extension. */
-    slashCommands?: MonnoSlashCommand[]
-    /** Context menus attached to the extension. */
-    contextMenus?: MonnoContextMenu[]
-    /** Liseners attached to the extension. */
-    listeners?: [event: string, listener: (...args: any[]) => Awaitable<any>][]
-    /** A function that is ran when the extension is registered. */
-    onRegister?: (client: Monno) => Awaitable<any>
+	/** The name of the extension. */
+	name: string
+	/** Data attached to the extension. */
+	data?: unknown
+	/** Slash commands attached to the extension. */
+	slashCommands?: MonnoSlashCommand[]
+	/** Context menus attached to the extension. */
+	contextMenus?: MonnoContextMenu[]
+	/** Liseners attached to the extension. */
+	listeners?: [event: string, listener: (...args: any[]) => Awaitable<any>][]
+	/** A function that is ran when the extension is registered. */
+	onRegister?: (client: Monno) => Awaitable<any>
 }
 
 export interface MonnoClientCommandBuild {
-    onInteraction: (interaction: Interaction) => Awaitable<any>
-    commandsToRegister: ApplicationCommandDataResolvable[]
+	onInteraction: (interaction: Interaction) => Awaitable<any>
+	commandsToRegister: ApplicationCommandDataResolvable[]
 }
