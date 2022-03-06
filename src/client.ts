@@ -17,7 +17,7 @@ export declare interface Monno extends Client {
 	emit<K extends keyof ClientEvents>(event: K, ...args: ClientEvents[K]): boolean
 	emit<S extends string | symbol>(event: Exclude<S, keyof ClientEvents>, ...args: unknown[]): boolean
 
-	emit(event: "startup", client: Monno): void
+	emit(event: "startup", client: Monno): boolean
 }
 
 export class Monno extends Client {
@@ -68,7 +68,7 @@ export type MonnoClientOptions = ClientOptions &
 		  }
 	)
 
-export type RequiredPermissionsType = {
+export interface MonnoRequiredPermissions {
 	/** Whether the user should match all or one of the permissions. */
 	type: "ALL" | "ANY"
 	/** List of the permissions. */

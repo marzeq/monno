@@ -1,4 +1,4 @@
-import { Monno, RequiredPermissionsType } from "./client"
+import { Monno, MonnoRequiredPermissions } from "./client"
 import { Collection, Permissions, ApplicationCommandOptionData, CommandInteraction, ApplicationCommandDataResolvable, Awaitable } from "discord.js"
 import { MonnoClientCommandBuild } from "./extensions"
 
@@ -94,7 +94,7 @@ export interface MonnoSlashCommand {
 	/** Whether the slash command should be able to be run in direct messages. */
 	allowDM?: boolean
 	/** The required permission(s) to use this slash command. */
-	requiredPermissions?: RequiredPermissionsType
+	requiredPermissions?: MonnoRequiredPermissions
 	/** A function that is executed once someone runs the slash command. */
 	run(interaction: CommandInteraction): Awaitable<any>
 }

@@ -1,4 +1,4 @@
-import { Monno, RequiredPermissionsType } from "./client"
+import { Monno, MonnoRequiredPermissions } from "./client"
 import {
 	ApplicationCommandDataResolvable,
 	Collection,
@@ -104,7 +104,7 @@ export type MonnoContextMenu = {
 	/** Whether the context menu should be available in direct messages. */
 	allowDM?: boolean
 	/** The required permission(s) to use this context menu. */
-	requiredPermissions?: RequiredPermissionsType
+	requiredPermissions?: MonnoRequiredPermissions
 } & (
 	| {
 			/** The type of the context menu. */
