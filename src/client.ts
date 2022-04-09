@@ -1,4 +1,5 @@
-import { Awaitable, Client, ClientEvents, ClientOptions, PermissionResolvable } from "discord.js"
+import { Awaitable, Client, ClientEvents, ClientOptions, GuildMember, PermissionResolvable, User } from "discord.js"
+import { APIInteractionGuildMember } from "discord-api-types"
 import { MonnoSlashCommandManager } from "./slashCommands"
 import { MonnoExtensionManager } from "./extensions"
 import { MonnoContextMenuManager } from "./contextMenus"
@@ -68,9 +69,16 @@ export type MonnoClientOptions = ClientOptions &
 		  }
 	)
 
-export interface MonnoRequiredPermissions {
-	/** Whether the user should match all or one of the permissions. */
-	type: "ALL" | "ANY"
-	/** List of the permissions. */
-	permissions: PermissionResolvable[]
-}
+export type MonnoRequiredPermissions =
+	| {
+			/** Whether the user should match all or one of the permissions. */
+			type: "ALL" | "ANY"
+			/** List of the permissions. */
+			permissions: PermissionResolvable[]
+	  }
+	| {
+			/** Whether the user should match all or one of the permissions. */
+			type: "PREDICATE"
+			/** Predicate function that should return true if the user has the permissions. */
+			predicate: (user: User | GuildMember | APIInteractionGuildMember) => Awaitable<boolean>
+	  }

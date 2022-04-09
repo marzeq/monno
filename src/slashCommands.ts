@@ -1,5 +1,15 @@
 import { Monno, MonnoRequiredPermissions } from "./client"
-import { Collection, Permissions, ApplicationCommandOptionData, CommandInteraction, ApplicationCommandDataResolvable, Awaitable } from "discord.js"
+import {
+	Collection,
+	Permissions,
+	ApplicationCommandOptionData,
+	CommandInteraction,
+	ApplicationCommandDataResolvable,
+	Awaitable,
+	User,
+	GuildMember
+} from "discord.js"
+import { APIInteractionGuildMember } from "discord-api-types"
 import { MonnoClientCommandBuild } from "./extensions"
 
 export class MonnoSlashCommandManager {
@@ -56,9 +66,15 @@ export class MonnoSlashCommandManager {
 							let permissions = interaction.member.permissions
 							if (typeof permissions === "string") permissions = new Permissions(BigInt(permissions))
 
+							let author: User | GuildMember | APIInteractionGuildMember
+
+							if (!interaction.member) author = interaction.user
+							else author = interaction.member
+
 							if (
 								(command.requiredPermissions.type === "ALL" && !permissions.has(command.requiredPermissions.permissions)) ||
-								(command.requiredPermissions.type === "ANY" && !permissions.any(command.requiredPermissions.permissions))
+								(command.requiredPermissions.type === "ANY" && !permissions.any(command.requiredPermissions.permissions)) ||
+								(command.requiredPermissions.type === "PREDICATE" && !(await command.requiredPermissions.predicate(author)))
 							)
 								return interaction.reply({
 									content: "You lack the required permission to use this command!",

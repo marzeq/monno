@@ -5,8 +5,11 @@ import {
 	MessageContextMenuInteraction,
 	UserContextMenuInteraction,
 	Permissions,
-	Awaitable
+	Awaitable,
+	GuildMember,
+	User
 } from "discord.js"
+import { APIInteractionGuildMember } from "discord-api-types"
 import { MonnoClientCommandBuild } from "./extensions"
 
 export class MonnoContextMenuManager {
@@ -63,9 +66,15 @@ export class MonnoContextMenuManager {
 							let permissions = interaction.member.permissions
 							if (typeof permissions === "string") permissions = new Permissions(BigInt(permissions))
 
+							let author: User | GuildMember | APIInteractionGuildMember
+
+							if (!interaction.member) author = interaction.user
+							else author = interaction.member
+
 							if (
 								(contextMenu.requiredPermissions.type === "ALL" && !permissions.has(contextMenu.requiredPermissions.permissions)) ||
-								(contextMenu.requiredPermissions.type === "ANY" && !permissions.any(contextMenu.requiredPermissions.permissions))
+								(contextMenu.requiredPermissions.type === "ANY" && !permissions.any(contextMenu.requiredPermissions.permissions)) ||
+								(contextMenu.requiredPermissions.type === "PREDICATE" && !(await contextMenu.requiredPermissions.predicate(author)))
 							)
 								return interaction.reply({
 									content: "You lack the required permission to use this context menu!",
