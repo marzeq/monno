@@ -74,7 +74,7 @@ export class MonnoContextMenuManager {
 							if (
 								(contextMenu.requiredPermissions.type === "ALL" && !permissions.has(contextMenu.requiredPermissions.permissions)) ||
 								(contextMenu.requiredPermissions.type === "ANY" && !permissions.any(contextMenu.requiredPermissions.permissions)) ||
-								(contextMenu.requiredPermissions.type === "PREDICATE" && !(await contextMenu.requiredPermissions.predicate(author)))
+								(contextMenu.requiredPermissions.type === "PREDICATE" && !(await contextMenu.requiredPermissions.predicate(author, client)))
 							)
 								return interaction.reply({
 									content: "You lack the required permission to use this context menu!",

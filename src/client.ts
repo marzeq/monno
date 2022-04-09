@@ -80,5 +80,5 @@ export type MonnoRequiredPermissions =
 			/** Whether the user should match all or one of the permissions. */
 			type: "PREDICATE"
 			/** Predicate function that should return true if the user has the permissions. */
-			predicate: (user: User | GuildMember | APIInteractionGuildMember) => Awaitable<boolean>
+			predicate: (user: User | GuildMember | APIInteractionGuildMember, client: Monno) => Awaitable<boolean>
 	  }

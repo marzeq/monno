@@ -74,7 +74,7 @@ export class MonnoSlashCommandManager {
 							if (
 								(command.requiredPermissions.type === "ALL" && !permissions.has(command.requiredPermissions.permissions)) ||
 								(command.requiredPermissions.type === "ANY" && !permissions.any(command.requiredPermissions.permissions)) ||
-								(command.requiredPermissions.type === "PREDICATE" && !(await command.requiredPermissions.predicate(author)))
+								(command.requiredPermissions.type === "PREDICATE" && !(await command.requiredPermissions.predicate(author, client)))
 							)
 								return interaction.reply({
 									content: "You lack the required permission to use this command!",
