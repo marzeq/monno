@@ -16,6 +16,10 @@ Or with yarn:
 -   Revolutionary concept of extensions that allow you to split your bot into multiple parts or to easily register third party extensions
 -   Maintains the true spirit of discord.js while allowing you to easily add features without having to work on boring internals
 
+## Disclaimer:
+
+It is not advised to run this package for complex bots in large amounts of servers. You are going to end up fighting with this package and at that scale it is better to make your own equivalent of this that matches your needs. 
+
 ## Simple hello world project
 
 ```ts
